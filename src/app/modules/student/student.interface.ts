@@ -31,10 +31,10 @@ export type Student = {
     contactNo: string;
     emergencyContactNo: string;
     bloodGroup?: "A +" | "B-" | "B+" | "AB+";
-    presendAddress: string;
+    presentAddress: string;
     parmanentAdress: string;
     guardian: Guardian;
     localGuardian: LocalGuardian;
     profileImg?: string;
-    isActive: 'active' | 'inactive';
+    isActive: 'active' | 'blocked';
 }
