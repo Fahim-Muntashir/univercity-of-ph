@@ -1,67 +1,35 @@
-import { Request, Response } from 'express';
-import { StudentServices } from './student.service';
+import httpStatus from 'http-status';
 
-const getAllStudents = async (req: Request, res: Response) => {
+import { NextFunction, Request, Response } from 'express';
+import sendResponse from '../../utils/sendResponse';
+import { UserServices } from './user.service';
+
+const createStudent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const result = await StudentServices.getAllStudentsFromDB();
+    const { password, student: studentData } = req.body;
 
-    res.status(200).json({
+    // const zodParsedData = studentValidationSchema.parse(studentData);
+
+    const result = await UserServices.createStudentIntoDB(
+      password,
+      studentData,
+    );
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
       success: true,
-      message: 'Students are retrieved succesfully',
+      message: 'Student is created succesfully',
       data: result,
     });
-  } catch (err: any) {
-    res.status(500).json({
-      success: false,
-      message: err.message || 'something went wrong',
-      error: err,
-    });
+  } catch (err) {
+    next(err);
   }
 };
 
-const getSingleStudent = async (req: Request, res: Response) => {
-  try {
-    const { studentId } = req.params;
-
-    const result = await StudentServices.getSingleStudentFromDB(studentId);
-
-    res.status(200).json({
-      success: true,
-      message: 'Student is retrieved succesfully',
-      data: result,
-    });
-  } catch (err: any) {
-    res.status(500).json({
-      success: false,
-      message: err.message || 'something went wrong',
-      error: err,
-    });
-  }
-};
-
-const deleteStudent = async (req: Request, res: Response) => {
-  try {
-    const { studentId } = req.params;
-
-    const result = await StudentServices.deleteStudentFromDB(studentId);
-
-    res.status(200).json({
-      success: true,
-      message: 'Student is deleted succesfully',
-      data: result,
-    });
-  } catch (err: any) {
-    res.status(500).json({
-      success: false,
-      message: err.message || 'something went wrong',
-      error: err,
-    });
-  }
-};
-
-export const StudentControllers = {
+export const UserControllers = {
   createStudent,
-  getAllStudents,
-  getSingleStudent,
-  deleteStudent,
 };
