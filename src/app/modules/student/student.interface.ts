@@ -1,40 +1,60 @@
-export type Guardian = {
-    fatherName: string;
-    fatherOccupacation: string;
-    fatherContactNo: string;
-    motherName: string;
-    motherOccupacation: string;
-    motherContactNo: string;
+import { Model } from 'mongoose';
+
+export type TUserName = {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+};
+
+export type TGuardian = {
+  fatherName: string;
+  fatherOccupation: string;
+  fatherContactNo: string;
+  motherName: string;
+  motherOccupation: string;
+  motherContactNo: string;
+};
+
+export type TLocalGuardian = {
+  name: string;
+  occupation: string;
+  contactNo: string;
+  address: string;
+};
+
+export type TStudent = {
+  id: string;
+  password: string;
+  name: TUserName;
+  gender: 'male' | 'female' | 'other';
+  dateOfBirth?: string;
+  email: string;
+  contactNo: string;
+  emergencyContactNo: string;
+  bloogGroup?: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
+  presentAddress: string;
+  permanentAddress: string;
+  guardian: TGuardian;
+  localGuardian: TLocalGuardian;
+  profileImg?: string;
+  isActive: 'active' | 'blocked';
+  isDeleted: boolean;
+};
+
+//for creating static
+
+export interface StudentModel extends Model<TStudent> {
+  isUserExists(id: string): Promise<TStudent | null>;
 }
 
-export type UserName = {
-    firstName: string;
-    middleName: string;
-    lastName: string;
+// for creating instance
 
-}
+// export interface StudentMethods {
+//   isUserExists(id: string): Promise<TStudent | null>;
+// }
 
-export type LocalGuardian = {
-    name: string;
-    occupacaiton: string;
-    contactNo: string;
-    address: string;
-}
-
-export type Student = {
-    id: string;
-    name: UserName,
-    gender: "male" | "female";
-    dateOfBirth: string;
-    email: string;
-    avatar?: string;
-    contactNo: string;
-    emergencyContactNo: string;
-    bloodGroup?: "A +" | "B-" | "B+" | "AB+";
-    presentAddress: string;
-    parmanentAdress: string;
-    guardian: Guardian;
-    localGuardian: LocalGuardian;
-    profileImg?: string;
-    isActive: 'active' | 'blocked';
-}
+// export type StudentModel = Model<
+//   TStudent,
+//   Record<string, never>,
+//   StudentMethods
+// >;
