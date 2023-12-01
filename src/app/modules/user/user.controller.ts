@@ -1,20 +1,18 @@
 import httpStatus from 'http-status';
 
-import { NextFunction, Request, RequestHandler, Response } from 'express';
+import {  RequestHandler } from 'express';
 import sendResponse from '../../utils/sendResponse';
 import { UserServices } from './user.service';
-
-type AddFunc = (param1: number, param2: number) => number;
-
-const add: AddFunc=(param1,param2)=
+import catchAsync from '../../utils/catchAsync';
 
 
-const createStudent: RequestHandler = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
+
+
+const createStudent: RequestHandler = catchAsync(async (
+  req,
+  res,
 ) => {
-  try {
+  
     const { password, student: studentData } = req.body;
 
     // const zodParsedData = studentValidationSchema.parse(studentData);
@@ -30,10 +28,8 @@ const createStudent: RequestHandler = async (
       message: 'Student is created succesfully',
       data: result,
     });
-  } catch (err) {
-    next(err);
-  }
-};
+ 
+})
 
 export const UserControllers = {
   createStudent,
