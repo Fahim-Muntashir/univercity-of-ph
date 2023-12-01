@@ -1,10 +1,15 @@
 import httpStatus from 'http-status';
 
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 import sendResponse from '../../utils/sendResponse';
 import { UserServices } from './user.service';
 
-const createStudent = async (
+type AddFunc = (param1: number, param2: number) => number;
+
+const add: AddFunc=(param1,param2)=
+
+
+const createStudent: RequestHandler = async (
   req: Request,
   res: Response,
   next: NextFunction,
