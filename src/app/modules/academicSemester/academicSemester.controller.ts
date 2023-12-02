@@ -3,6 +3,7 @@ import httpStatus from 'http-status';
 import {  RequestHandler } from 'express';
 import sendResponse from '../../utils/sendResponse';
 import catchAsync from '../../utils/catchAsync';
+import { AcademicSemesterServices } from './academicSemester.service';
 
 
 
@@ -12,18 +13,14 @@ const createAcademicSemester: RequestHandler = catchAsync(async (
   res,
 ) => {
   
-    // const { password, student: studentData } = req.body;
 
-
-    // const result = await UserServices.createStudentIntoDB(
-    //   password,
-    //   studentData,
-    // );
-
-    sendResponse(res, {
+    const result = await AcademicSemesterServices.createAcademicSemesterIntoDB(req.body)
+   
+   
+        sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
-      message: 'Student is created succesfully',
+      message: 'Academic creator is created succesfully',
       data: result,
     });
  

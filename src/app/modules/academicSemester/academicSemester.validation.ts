@@ -5,7 +5,7 @@ import { AcademicSemesterCode, AcademicSemesterName, Months } from './academicSe
 const createAcademicSemesterValidationSchema = z.object({
     body: z.object({
         name: z.enum([...AcademicSemesterName] as [string, ...string[]]),
-        year: z.date(),
+        year: z.string(),
         code: z.enum([...AcademicSemesterCode] as [
             string,...string[]
         ]),
@@ -15,5 +15,5 @@ const createAcademicSemesterValidationSchema = z.object({
 });
 
 export const AcademicSemestervalidations = {
-  userValidationSchema: createAcademicSemesterValidationSchema,
+createAcademicSemesterValidationSchema,
 };
