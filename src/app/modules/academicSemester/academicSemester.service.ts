@@ -1,27 +1,48 @@
-import { TAcademicSemester } from "./academicSemester";
-import { AcademicSemester } from "./academicSemesterModel";
+import { academicSemesterNameCodeMapper } from './academicSemester.constant';
+import { TAcademicSemester } from './academicSemester.interface';
+import { AcademicSemester } from './academicSemester.model';
+const createAcademicSemesterIntoDB = async (payload: TAcademicSemester) => {
+  // semester name --> semester code
+  // academicSemesterNameCodeMapper['Fall']
+  if (academicSemesterNameCodeMapper[payload.name] !== payload.code) {
+    throw new Error('Invalid Semester Code');
+  }
 
-const createAcademicSemesterIntoDB = async (payload: TAcademicSemester) => {   
+  const result = await AcademicSemester.create(payload);
+  return result;
+};
 
-    // semester name ==> semester code
+const getAllAcademicSemestersFromDB = async () => {
+  const result = await AcademicSemester.find();
+  return result;
+};
 
-    type TAcademicSemesterNameCodeMapper = {
-        [key: string]: string;
-    }
+const getSingleAcademicSemesterFromDB = async (id: string) => {
+  const result = await AcademicSemester.findById(id);
+  return result;
+};
 
-    const academicSemesterNameCodeMapper:TAcademicSemesterNameCodeMapper = {
-        Autumn: "01",
-        Summer: "02",
-        Fall: "03",
-    }
+const updateAcademicSemesterIntoDB = async (
+  id: string,
+  payload: Partial<TAcademicSemester>,
+) => {
+  if (
+    payload.name &&
+    payload.code &&
+    academicSemesterNameCodeMapper[payload.name] !== payload.code
+  ) {
+    throw new Error('Invalid Semester Code');
+  }
 
-    if (academicSemesterNameCodeMapper[payload.name] !==payload.code){
-        throw new Error('Invalid semester code!!')
-}
-        const result = await AcademicSemester.
-            create(payload);
-    return result;
-}
+  const result = await AcademicSemester.findOneAndUpdate({ _id: id }, payload, {
+    new: true,
+  });
+  return result;
+};
+
 export const AcademicSemesterServices = {
-    createAcademicSemesterIntoDB,
-}
+  createAcademicSemesterIntoDB,
+  getAllAcademicSemestersFromDB,
+  getSingleAcademicSemesterFromDB,
+  updateAcademicSemesterIntoDB,
+};

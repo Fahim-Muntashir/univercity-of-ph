@@ -1,19 +1,31 @@
 import express from 'express';
-import { AcademicSemesterUserControllers } from './academicSemester.controller';
-import validateRequest from '../../middlewares/validaterequest';
-import { AcademicSemestervalidations } from './academicSemester.validation';
+import validateRequest from '../../middlewares/validateRequest';
+import { AcademicSemesterControllers } from './academicSemester.controller';
+import { AcademicSemesterValidations } from './academicSemester.validation';
 
 const router = express.Router();
 
+router.post(
+  '/create-academic-semester',
+  validateRequest(
+    AcademicSemesterValidations.createAcdemicSemesterValidationSchema,
+  ),
+  AcademicSemesterControllers.createAcademicSemester,
+);
 
-router.post('/create-academic-semester',
-    validateRequest(AcademicSemestervalidations.createAcademicSemesterValidationSchema),
-    AcademicSemesterUserControllers.createAcademicSemester)
+router.get(
+  '/:semesterId',
+  AcademicSemesterControllers.getSingleAcademicSemester,
+);
 
-// router.get('/:studentId', StudentControllers.getSingleStudent);
+router.patch(
+  '/:semesterId',
+  validateRequest(
+    AcademicSemesterValidations.updateAcademicSemesterValidationSchema,
+  ),
+  AcademicSemesterControllers.updateAcademicSemester,
+);
 
-// router.delete('/:studentId', StudentControllers.deleteStudent);
-
-// router.get('/', StudentControllers.getAllStudents);
+router.get('/', AcademicSemesterControllers.getAllAcademicSemesters);
 
 export const AcademicSemesterRoutes = router;
