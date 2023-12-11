@@ -1,8 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import httpStatus from 'http-status';
-import mongoose from 'mongoose';
 import config from '../../config';
-import AppError from '../../errors/AppError';
 import { TStudent } from '../student/student.interface';
 import { Student } from '../student/student.model';
 import { AcademicSemester } from './../academicSemester/academicSemester.model';
@@ -25,40 +21,20 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
     payload.admissionSemester,
   );
 
-  const session = await mongoose.startSession();
+  //set  generated id
+  userData.id = await generateStudentId(admissionSemester);
 
-  try {
-    session.startTransaction();
-    //set  generated id
-    userData.id = await generateStudentId(admissionSemester);
+  // create a user
+  const newUser = await User.create(userData);
 
-    // create a user (transaction-1)
-    const newUser = await User.create([userData], { session }); // array
-
-    //create a student
-    if (!newUser.length) {
-      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create user');
-    }
+  //create a student
+  if (Object.keys(newUser).length) {
     // set id , _id as user
-    payload.id = newUser[0].id;
-    payload.user = newUser[0]._id; //reference _id
+    payload.id = newUser.id;
+    payload.user = newUser._id; //reference _id
 
-    // create a student (transaction-2)
-
-    const newStudent = await Student.create([payload], { session });
-
-    if (!newStudent.length) {
-      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create student');
-    }
-
-    await session.commitTransaction();
-    await session.endSession();
-
+    const newStudent = await Student.create(payload);
     return newStudent;
-  } catch (err: any) {
-    await session.abortTransaction();
-    await session.endSession();
-    throw new Error(err);
   }
 };
 
