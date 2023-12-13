@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const userNameValidationSchema = z.object({
+const userNameSchema = z.object({
   firstName: z
     .string()
     .min(1)
@@ -12,7 +12,7 @@ const userNameValidationSchema = z.object({
   lastName: z.string(),
 });
 
-const guardianValidationSchema = z.object({
+const guardianSchema = z.object({
   fatherName: z.string(),
   fatherOccupation: z.string(),
   fatherContactNo: z.string(),
@@ -21,34 +21,30 @@ const guardianValidationSchema = z.object({
   motherContactNo: z.string(),
 });
 
-const localGuardianValidationSchema = z.object({
+const localGuardianSchema = z.object({
   name: z.string(),
   occupation: z.string(),
   contactNo: z.string(),
   address: z.string(),
 });
 
-export const createStudentValidationSchema = z.object({
-  body: z.object({
-    password: z.string().max(20),
-    student: z.object({
-      name: userNameValidationSchema,
-      gender: z.enum(['male', 'female', 'other']),
-      dateOfBirth: z.string().optional(),
-      email: z.string().email(),
-      contactNo: z.string(),
-      emergencyContactNo: z.string(),
-      bloogGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
-      presentAddress: z.string(),
-      permanentAddress: z.string(),
-      guardian: guardianValidationSchema,
-      localGuardian: localGuardianValidationSchema,
-      admissionSemester: z.string(),
-      profileImg: z.string(),
-    }),
-  }),
+export const studentValidationSchema = z.object({
+  id: z.string(),
+  password: z.string().max(20),
+  name: userNameSchema,
+  gender: z.enum(['male', 'female', 'other']),
+  dateOfBirth: z.string(),
+  email: z.string().email(),
+  contactNo: z.string(),
+  emergencyContactNo: z.string(),
+  bloogGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
+  presentAddress: z.string(),
+  permanentAddress: z.string(),
+  guardian: guardianSchema,
+  localGuardian: localGuardianSchema,
+  profileImg: z.string(),
+  isActive: z.enum(['active', 'blocked']).default('active'),
+  isDeleted: z.boolean().optional().default(false),
 });
 
-export const studentValidations = {
-  createStudentValidationSchema,
-};
+export default studentValidationSchema;

@@ -1,4 +1,6 @@
+import bcrypt from 'bcrypt';
 import { Schema, model } from 'mongoose';
+import config from '../../config';
 import {
   StudentModel,
   TGuardian,
@@ -76,16 +78,17 @@ const localGuradianSchema = new Schema<TLocalGuardian>({
 
 const studentSchema = new Schema<TStudent, StudentModel>(
   {
-    id: {
-      type: String,
-      required: [true, 'ID is required'],
-      unique: true,
-    },
+    id: { type: String, required: [true, 'ID is required'], unique: true },
     user: {
-      type: Schema.Types.ObjectId,
-      required: [true, 'User id is required'],
+      type:Schema.Types.ObjectId,
+      required: [true, 'User Is must me Required'],
       unique: true,
-      ref: 'User',
+      ref:'User',
+    },
+    password: {
+      type: String,
+      required: [true, 'Password is required'],
+      maxlength: [20, 'Password can not be more than 20 characters'],
     },
     name: {
       type: userNameSchema,
@@ -99,7 +102,7 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       },
       required: [true, 'Gender is required'],
     },
-    dateOfBirth: { type: Date },
+    dateOfBirth: { type: String },
     email: {
       type: String,
       required: [true, 'Email is required'],
@@ -134,9 +137,13 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       required: [true, 'Local guardian information is required'],
     },
     profileImg: { type: String },
-    admissionSemester: {
-      type: Schema.Types.ObjectId,
-      ref: 'AcademicSemester',
+    isActive: {
+      type: String,
+      enum: {
+        values: ['active', 'blocked'],
+        message: '{VALUE} is not a valid status',
+      },
+      default: 'active',
     },
     isDeleted: {
       type: Boolean,
@@ -155,6 +162,25 @@ studentSchema.virtual('fullName').get(function () {
   return this.name.firstName + this.name.middleName + this.name.lastName;
 });
 
+// pre save middleware/ hook : will work on create()  save()
+studentSchema.pre('save', async function (next) {
+  // console.log(this, 'pre hook : we will save  data');
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this; // doc
+  // hashing password and save into DB
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_rounds),
+  );
+  next();
+});
+
+// post save middleware / hook
+studentSchema.post('save', function (doc, next) {
+  doc.password = '';
+  next();
+});
+
 // Query Middleware
 studentSchema.pre('find', function (next) {
   this.find({ isDeleted: { $ne: true } });
@@ -166,6 +192,8 @@ studentSchema.pre('findOne', function (next) {
   next();
 });
 
+// [ {$match: { isDeleted : {  $ne: : true}}}   ,{ '$match': { id: '123456' } } ]
+
 studentSchema.pre('aggregate', function (next) {
   this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
   next();
@@ -176,5 +204,12 @@ studentSchema.statics.isUserExists = async function (id: string) {
   const existingUser = await Student.findOne({ id });
   return existingUser;
 };
+
+//creating a custom instance method
+// studentSchema.methods.isUserExists = async function (id: string) {
+//   const existingUser = await Student.findOne({ id });
+
+//   return existingUser;
+// };
 
 export const Student = model<TStudent, StudentModel>('Student', studentSchema);

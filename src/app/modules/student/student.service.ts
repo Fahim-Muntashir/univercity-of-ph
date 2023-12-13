@@ -1,4 +1,6 @@
+import { TStudent } from './student.interface';
 import { Student } from './student.model';
+
 
 const getAllStudentsFromDB = async () => {
   const result = await Student.find();

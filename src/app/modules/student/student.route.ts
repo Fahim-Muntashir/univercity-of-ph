@@ -3,9 +3,11 @@ import { StudentControllers } from './student.controller';
 
 const router = express.Router();
 
-router.get('/:semesterIdId', StudentControllers.getSingleStudent);
+router.post('/create-student', StudentControllers.createStudent);
 
-router.delete('/:semesterIdId', StudentControllers.deleteStudent);
+router.get('/:studentId', StudentControllers.getSingleStudent);
+
+router.delete('/:studentId', StudentControllers.deleteStudent);
 
 router.get('/', StudentControllers.getAllStudents);
 
